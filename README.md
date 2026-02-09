@@ -1,36 +1,145 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FormCraft — Generador de Formularios Dinámicos
 
-## Getting Started
+Aplicación web para crear formularios personalizados con drag & drop, compartirlos mediante link público y visualizar las respuestas con gráficas y estadísticas.
 
-First, run the development server:
+## Stack Tecnológico
+
+- **Frontend**: React + TypeScript + Next.js 16 (App Router)
+- **Backend**: Server Actions de Next.js + Arquitectura Hexagonal
+- **BaaS**: Supabase (PostgreSQL, Auth)
+- **UI**: shadcn/ui + Tailwind CSS
+- **Drag & Drop**: @dnd-kit
+- **Gráficas**: Recharts
+- **Deployment**: Vercel
+
+## Requisitos Previos
+
+- Node.js >= 18
+- npm >= 9
+- Cuenta de Supabase (capa gratuita)
+
+## Configuración Local
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/carloscuatin/form-craft.git
+cd form-craft
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. Configurar Supabase
+
+1. Crea un proyecto en [Supabase](https://supabase.com)
+2. Ve a **SQL Editor** y ejecuta el contenido de `supabase/migrations/20260208033356_initial_schema.sql`
+3. Copia las credenciales de tu proyecto (Settings → API)
+
+### 4. Variables de entorno
+
+Crea un archivo `.env.local` en la raíz del proyecto:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu-publishable-key
+```
+
+### 5. Ejecutar en desarrollo
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura del Proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── actions/                  # Server Actions (orquestación)
+│   ├── builder/                  # Editor de formularios
+│   ├── dashboard/                # Dashboard + detalle de respuestas
+│   ├── forms/[id]/               # Formulario público
+│   ├── login/                    # Página de login
+│   └── register/                 # Página de registro
+│
+├── core/                         # 🏛️ Arquitectura Hexagonal
+│   ├── domain/
+│   │   ├── entities/             # Form, Response
+│   │   ├── ports/                # Interfaces de repositorios
+│   │   └── value-objects/        # FieldType, constantes
+│   └── use-cases/                # Casos de uso del negocio
+│
+├── infrastructure/               # 🔌 Adapters
+│   ├── adapters/supabase/        # Implementación Supabase
+│   └── mappers/                  # Transformación Domain ↔ DB
+│
+├── components/                   # 🎨 Componentes React
+│   ├── auth/                     # Formulario de login/registro
+│   ├── builder/                  # Builder: editor, preview, panel
+│   ├── dashboard/                # Cards, tablas, gráficas
+│   ├── forms/                    # Renderer dinámico de campos
+│   └── ui/                       # shadcn/ui base
+│
+├── hooks/                        # Custom hooks
+└── lib/                          # Utilidades (Supabase client, cn)
+```
 
-## Learn More
+## Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+### Core (Implementado)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- ✅ Autenticación (login/registro) con Supabase Auth
+- ✅ Protección de rutas con middleware
+- ✅ Form Builder con drag & drop
+- ✅ 6 tipos de campo: texto corto, texto largo, número, fecha, selección única, selección múltiple
+- ✅ Vista previa en tiempo real
+- ✅ Formularios públicos con URL única
+- ✅ Validación client-side y server-side
+- ✅ Dashboard con listado y contador de respuestas
+- ✅ Tabla de respuestas
+- ✅ Gráficas (pie chart y barras) para campos de selección
+- ✅ Copiar link público al portapapeles
+- ✅ RLS en PostgreSQL
+- ✅ Diseño responsive (desktop y mobile)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Arquitectura
 
-## Deploy on Vercel
+- ✅ Arquitectura Hexagonal (Clean Architecture) en backend
+- ✅ Arquitectura de Componentes en frontend
+- ✅ TypeScript estricto
+- ✅ Separación de responsabilidades
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Esquema de Base de Datos
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+El esquema SQL con RLS se encuentra en:
+
+```
+supabase/migrations/20260208033356_initial_schema.sql
+```
+
+## Decisiones Técnicas
+
+Ver [DECISIONS.md](./DECISIONS.md) para una explicación detallada de las decisiones de arquitectura, librerías y trade-offs.
+
+## Credenciales de Prueba
+
+Puedes registrarte con cualquier email y contraseña (mínimo 6 caracteres) o usar las credenciales de prueba:
+
+- **Email**: test@formcraft.com
+- **Password**: formcraft123
+
+## Deploy
+
+El proyecto está desplegado en Vercel:
+
+- URL: [https://form-craft.vercel.app/]
+
+## Licencia
+
+MIT
