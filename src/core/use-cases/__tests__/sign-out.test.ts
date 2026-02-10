@@ -25,9 +25,7 @@ describe('SignOutUseCase', () => {
   });
 
   it('should propagate the error if sign out fails', async () => {
-    mockAuthRepository.signOut.mockRejectedValue(
-      new Error('Sign out failed'),
-    );
+    mockAuthRepository.signOut.mockRejectedValue(new Error('Sign out failed'));
 
     await expect(useCase.execute()).rejects.toThrow('Sign out failed');
   });

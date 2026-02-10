@@ -38,9 +38,7 @@ describe('GetResponsesUseCase', () => {
 
     expect(result).toEqual(mockResponses);
     expect(result).toHaveLength(2);
-    expect(mockResponseRepository.findByFormId).toHaveBeenCalledWith(
-      'form-1',
-    );
+    expect(mockResponseRepository.findByFormId).toHaveBeenCalledWith('form-1');
   });
 
   it('should return an empty array if there are no responses', async () => {

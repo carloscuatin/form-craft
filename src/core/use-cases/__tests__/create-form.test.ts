@@ -77,8 +77,8 @@ describe('CreateFormUseCase', () => {
   });
 
   it('should throw an error if the title contains only spaces', async () => {
-    await expect(
-      useCase.execute({ ...baseDTO, title: '   ' }),
-    ).rejects.toThrow('El título del formulario es obligatorio');
+    await expect(useCase.execute({ ...baseDTO, title: '   ' })).rejects.toThrow(
+      'El título del formulario es obligatorio',
+    );
   });
 });

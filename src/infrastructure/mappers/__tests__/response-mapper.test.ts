@@ -24,9 +24,7 @@ describe('ResponseMapper', () => {
       const result = ResponseMapper.toDomain(baseRow);
 
       expect(result.submittedAt).toBeInstanceOf(Date);
-      expect(result.submittedAt.toISOString()).toBe(
-        '2025-06-15T14:30:00.000Z',
-      );
+      expect(result.submittedAt.toISOString()).toBe('2025-06-15T14:30:00.000Z');
     });
 
     it('should preserve answers without transformation', () => {

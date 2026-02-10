@@ -5,9 +5,7 @@ const baseRow: FormRow = {
   user_id: 'user-1',
   title: 'My form',
   description: 'A description',
-  fields: [
-    { id: 'f1', type: 'short_text', label: 'Name', required: true },
-  ],
+  fields: [{ id: 'f1', type: 'short_text', label: 'Name', required: true }],
   published: true,
   created_at: '2025-06-15T10:30:00Z',
   updated_at: '2025-06-15T12:00:00Z',

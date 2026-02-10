@@ -113,9 +113,7 @@ describe('SubmitResponseUseCase', () => {
         formId: 'form-1',
         answers: { 'field-1': 'Carlos', 'field-3': [] },
       }),
-    ).rejects.toThrow(
-      'El campo "Hobbies" requiere al menos una selección',
-    );
+    ).rejects.toThrow('El campo "Hobbies" requiere al menos una selección');
   });
 
   it('should throw an error if a select option is invalid', async () => {
