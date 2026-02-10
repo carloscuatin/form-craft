@@ -138,7 +138,7 @@ Puedes registrarte con cualquier email y contraseña (mínimo 6 caracteres) o us
 
 El proyecto está desplegado en Vercel:
 
-- URL: [https://form-craft.vercel.app/]
+- URL: [https://form-craft-pi.vercel.app](https://form-craft-pi.vercel.app)
 
 ## Licencia
 
