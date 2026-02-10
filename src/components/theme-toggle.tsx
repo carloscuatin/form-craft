@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import { useTheme } from 'next-themes';
 import { Moon, Sun, Monitor, Check, type LucideIcon } from 'lucide-react';
 
@@ -17,7 +18,7 @@ const options: { value: string; label: string; icon: LucideIcon }[] = [
   { value: 'system', label: 'Sistema', icon: Monitor },
 ];
 
-export function ThemeToggle() {
+export const ThemeToggle: FC = () => {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -40,4 +41,4 @@ export function ThemeToggle() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};

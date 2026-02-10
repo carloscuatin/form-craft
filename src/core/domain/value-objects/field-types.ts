@@ -31,10 +31,3 @@ export const FIELD_TYPE_ICONS: Record<FieldType, string> = {
   [FIELD_TYPES.SINGLE_SELECT]: 'CircleDot',
   [FIELD_TYPES.MULTI_SELECT]: 'CheckSquare',
 };
-
-/** Checks if a field type supports options (select fields) */
-export function isSelectFieldType(type: FieldType): boolean {
-  return (
-    type === FIELD_TYPES.SINGLE_SELECT || type === FIELD_TYPES.MULTI_SELECT
-  );
-}

@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import { Plus, X } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -8,10 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { FormField } from '@/core/domain/entities/form';
-import {
-  isSelectFieldType,
-  FIELD_TYPE_LABELS,
-} from '@/core/domain/value-objects/field-types';
+import { FIELD_TYPE_LABELS } from '@/core/domain/value-objects/field-types';
 
 interface FieldEditorProps {
   field: FormField;
@@ -21,13 +19,13 @@ interface FieldEditorProps {
   onRemoveOption: (optionId: string) => void;
 }
 
-export function FieldEditor({
+export const FieldEditor: FC<FieldEditorProps> = ({
   field,
   onUpdate,
   onAddOption,
   onUpdateOption,
   onRemoveOption,
-}: FieldEditorProps) {
+}) => {
   return (
     <div className="space-y-5">
       <div>
@@ -89,7 +87,7 @@ export function FieldEditor({
         </div>
       </div>
 
-      {isSelectFieldType(field.type) && (
+      {field.options && (
         <>
           <Separator />
           <div className="space-y-3">
@@ -132,4 +130,4 @@ export function FieldEditor({
       )}
     </div>
   );
-}
+};

@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 
-export function buildAuthSchema(mode: 'login' | 'register') {
+export const buildAuthSchema = (mode: 'login' | 'register') => {
   return z.object({
     name:
       mode === 'register'
@@ -22,6 +22,6 @@ export function buildAuthSchema(mode: 'login' | 'register') {
         ? z.string().min(6, 'La contraseña debe tener al menos 6 caracteres')
         : z.string().min(1, 'La contraseña es obligatoria'),
   });
-}
+};
 
 export type AuthFormData = z.infer<ReturnType<typeof buildAuthSchema>>;

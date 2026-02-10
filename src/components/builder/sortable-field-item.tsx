@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, Copy } from 'lucide-react';
@@ -8,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FormField } from '@/core/domain/entities/form';
 import { FIELD_TYPE_LABELS } from '@/core/domain/value-objects/field-types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 interface SortableFieldItemProps {
   field: FormField;
@@ -18,13 +19,13 @@ interface SortableFieldItemProps {
   onDuplicate: () => void;
 }
 
-export function SortableFieldItem({
+export const SortableFieldItem: FC<SortableFieldItemProps> = ({
   field,
   isSelected,
   onSelect,
   onRemove,
   onDuplicate,
-}: SortableFieldItemProps) {
+}) => {
   const {
     attributes,
     listeners,
@@ -98,4 +99,4 @@ export function SortableFieldItem({
       </div>
     </div>
   );
-}
+};

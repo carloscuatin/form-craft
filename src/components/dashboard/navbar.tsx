@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FileText, LogOut, Plus } from 'lucide-react';
@@ -12,7 +13,7 @@ interface NavbarProps {
   userName?: string;
 }
 
-export function Navbar({ userName }: NavbarProps) {
+export const Navbar: FC<NavbarProps> = ({ userName }) => {
   const router = useRouter();
 
   async function handleSignOut() {
@@ -64,4 +65,4 @@ export function Navbar({ userName }: NavbarProps) {
       </div>
     </header>
   );
-}
+};

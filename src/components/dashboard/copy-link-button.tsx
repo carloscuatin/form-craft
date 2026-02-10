@@ -1,7 +1,7 @@
 'use client';
 
+import { type FC, useState } from 'react';
 import { Copy, Check } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ interface CopyLinkButtonProps {
   formId: string;
 }
 
-export function CopyLinkButton({ formId }: CopyLinkButtonProps) {
+export const CopyLinkButton: FC<CopyLinkButtonProps> = ({ formId }) => {
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -31,4 +31,4 @@ export function CopyLinkButton({ formId }: CopyLinkButtonProps) {
       {copied ? 'Copiado' : 'Copiar link'}
     </Button>
   );
-}
+};

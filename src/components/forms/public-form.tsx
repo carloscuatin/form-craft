@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { type FC, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,7 +27,7 @@ interface PublicFormProps {
   form: Form;
 }
 
-export function PublicForm({ form }: PublicFormProps) {
+export const PublicForm: FC<PublicFormProps> = ({ form }) => {
   const router = useRouter();
 
   const schema = useMemo(() => buildResponseSchema(form.fields), [form.fields]);
@@ -124,4 +124,4 @@ export function PublicForm({ form }: PublicFormProps) {
       </div>
     </div>
   );
-}
+};

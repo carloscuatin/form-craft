@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { type FC, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   DndContext,
@@ -45,7 +45,7 @@ interface FormBuilderProps {
 
 type ActiveTab = 'fields' | 'preview';
 
-export function FormBuilder({ formId, initialData }: FormBuilderProps) {
+export const FormBuilder: FC<FormBuilderProps> = ({ formId, initialData }) => {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('fields');
@@ -330,4 +330,4 @@ export function FormBuilder({ formId, initialData }: FormBuilderProps) {
       </div>
     </div>
   );
-}
+};

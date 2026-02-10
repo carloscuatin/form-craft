@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import { Eye } from 'lucide-react';
 
 import {
@@ -19,7 +20,11 @@ interface FormPreviewProps {
   fields: FormField[];
 }
 
-export function FormPreview({ title, description, fields }: FormPreviewProps) {
+export const FormPreview: FC<FormPreviewProps> = ({
+  title,
+  description,
+  fields,
+}) => {
   return (
     <div className="space-y-4">
       <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wider uppercase">
@@ -60,4 +65,4 @@ export function FormPreview({ title, description, fields }: FormPreviewProps) {
       </Card>
     </div>
   );
-}
+};

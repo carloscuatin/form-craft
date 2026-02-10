@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import Link from 'next/link';
 import {
   Edit,
@@ -28,7 +29,7 @@ interface FormCardProps {
   form: FormWithResponseCount;
 }
 
-export function FormCard({ form }: FormCardProps) {
+export const FormCard: FC<FormCardProps> = ({ form }) => {
   const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/forms/${form.id}`;
 
   async function handleCopyLink() {
@@ -159,4 +160,4 @@ export function FormCard({ form }: FormCardProps) {
       </CardContent>
     </Card>
   );
-}
+};

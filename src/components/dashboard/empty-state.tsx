@@ -1,9 +1,10 @@
+import { type FC } from 'react';
 import Link from 'next/link';
 import { FileText, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-export function EmptyState() {
+export const EmptyState: FC = () => {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
       <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/50">
@@ -24,4 +25,4 @@ export function EmptyState() {
       </Link>
     </div>
   );
-}
+};

@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import {
   Type,
   AlignLeft,
@@ -29,7 +30,7 @@ interface FieldTypePanelProps {
   onAddField: (type: FieldType) => void;
 }
 
-export function FieldTypePanel({ onAddField }: FieldTypePanelProps) {
+export const FieldTypePanel: FC<FieldTypePanelProps> = ({ onAddField }) => {
   const fieldTypes = Object.values(FIELD_TYPES);
 
   return (
@@ -56,4 +57,4 @@ export function FieldTypePanel({ onAddField }: FieldTypePanelProps) {
       </div>
     </div>
   );
-}
+};

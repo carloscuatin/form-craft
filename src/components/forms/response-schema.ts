@@ -15,7 +15,7 @@ import { FIELD_TYPES } from '@/core/domain/value-objects/field-types';
  * Builds a Zod schema dynamically from form fields.
  * Each field ID becomes a key in the resulting object schema.
  */
-export function buildResponseSchema(fields: FormField[]) {
+export const buildResponseSchema = (fields: FormField[]) => {
   const shape: Record<string, z.ZodTypeAny> = {};
 
   for (const field of fields) {
@@ -23,10 +23,10 @@ export function buildResponseSchema(fields: FormField[]) {
   }
 
   return z.object(shape);
-}
+};
 
 /** Builds the Zod schema for a single field based on its type and configuration */
-function buildFieldSchema(field: FormField): z.ZodTypeAny {
+export const buildFieldSchema = (field: FormField): z.ZodTypeAny => {
   switch (field.type) {
     case FIELD_TYPES.SHORT_TEXT:
     case FIELD_TYPES.LONG_TEXT:
@@ -63,4 +63,4 @@ function buildFieldSchema(field: FormField): z.ZodTypeAny {
     default:
       return z.unknown();
   }
-}
+};

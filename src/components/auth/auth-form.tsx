@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { type FC, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -19,13 +19,13 @@ import {
 } from '@/components/ui/card';
 import { signIn, signUp } from '@/app/actions/auth';
 
-import { buildAuthSchema, AuthFormData } from './auth-form-schema';
+import { buildAuthSchema, type AuthFormData } from './auth-form-schema';
 
 interface AuthFormProps {
   mode: 'login' | 'register';
 }
 
-export function AuthForm({ mode }: AuthFormProps) {
+export const AuthForm: FC<AuthFormProps> = ({ mode }) => {
   const [serverError, setServerError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -177,4 +177,4 @@ export function AuthForm({ mode }: AuthFormProps) {
       </Card>
     </div>
   );
-}
+};

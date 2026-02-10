@@ -1,5 +1,7 @@
 'use client';
 
+import { type FC } from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -27,13 +29,13 @@ interface FieldRendererProps {
  * Renders a single form field dynamically based on its type
  * Used in both the preview panel and the public form
  */
-export function FieldRenderer({
+export const FieldRenderer: FC<FieldRendererProps> = ({
   field,
   value,
   onChange,
   error,
   disabled = false,
-}: FieldRendererProps) {
+}) => {
   const handleChange = (newValue: AnswerValue) => {
     onChange?.(newValue);
   };
@@ -165,4 +167,4 @@ export function FieldRenderer({
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
-}
+};

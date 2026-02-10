@@ -12,9 +12,9 @@ import { FIELD_TYPES } from '@/core/domain/value-objects/field-types';
  * Builds default values for all form fields.
  * Each field type maps to its proper empty state.
  */
-export function buildResponseDefaults(
+export const buildResponseDefaults = (
   fields: FormField[],
-): Record<string, AnswerValue> {
+): Record<string, AnswerValue> => {
   const defaults: Record<string, AnswerValue> = {};
 
   for (const field of fields) {
@@ -32,4 +32,4 @@ export function buildResponseDefaults(
   }
 
   return defaults;
-}
+};

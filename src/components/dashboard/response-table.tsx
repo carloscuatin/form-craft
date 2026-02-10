@@ -1,5 +1,7 @@
 'use client';
 
+import { type FC } from 'react';
+
 import {
   Table,
   TableBody,
@@ -10,14 +12,16 @@ import {
 } from '@/components/ui/table';
 import { FormField } from '@/core/domain/entities/form';
 import { FormResponse } from '@/core/domain/entities/response';
-import { isSelectFieldType } from '@/core/domain/value-objects/field-types';
 
 interface ResponseTableProps {
   fields: FormField[];
   responses: FormResponse[];
 }
 
-export function ResponseTable({ fields, responses }: ResponseTableProps) {
+export const ResponseTable: FC<ResponseTableProps> = ({
+  fields,
+  responses,
+}) => {
   /** Resolve the display value of an answer */
   function getDisplayValue(field: FormField, response: FormResponse): string {
     const answer = response.answers[field.id];
@@ -26,7 +30,7 @@ export function ResponseTable({ fields, responses }: ResponseTableProps) {
       return '—';
     }
 
-    if (isSelectFieldType(field.type) && field.options) {
+    if (field.options) {
       if (Array.isArray(answer)) {
         return answer
           .map((a) => field.options?.find((o) => o.id === a)?.label ?? a)
@@ -103,4 +107,4 @@ export function ResponseTable({ fields, responses }: ResponseTableProps) {
       </div>
     </div>
   );
-}
+};

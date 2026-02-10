@@ -1,5 +1,6 @@
 'use client';
 
+import { type FC } from 'react';
 import {
   CircleCheckIcon,
   InfoIcon,
@@ -10,7 +11,7 @@ import {
 import { useTheme } from 'next-themes';
 import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
-const Toaster = ({ ...props }: ToasterProps) => {
+export const Toaster: FC<ToasterProps> = ({ ...props }) => {
   const { theme = 'system' } = useTheme();
 
   return (
@@ -36,5 +37,3 @@ const Toaster = ({ ...props }: ToasterProps) => {
     />
   );
 };
-
-export { Toaster };

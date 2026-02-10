@@ -8,7 +8,6 @@ import {
   ResponseRepository,
   SubmitResponseDTO,
 } from '../domain/ports/response-repository';
-import { isSelectFieldType } from '../domain/value-objects/field-types';
 
 export class SubmitResponseUseCase {
   constructor(
@@ -38,7 +37,7 @@ export class SubmitResponseUseCase {
       }
 
       // Validate select fields have valid options
-      if (answer && isSelectFieldType(field.type) && field.options) {
+      if (answer && field.options) {
         const validOptionIds = field.options.map((o) => o.id);
         const answerArray = Array.isArray(answer) ? answer : [answer];
         for (const val of answerArray) {
