@@ -19,7 +19,7 @@ import { Form } from '@/core/domain/entities/form';
 import { Answers, AnswerValue } from '@/core/domain/entities/response';
 import { submitResponse } from '@/app/actions/forms';
 
-import { FieldRenderer } from './field-renderer';
+import { FieldRenderer } from '../renderer';
 import { buildResponseDefaults } from './form-defaults';
 import { buildResponseSchema } from './response-schema';
 

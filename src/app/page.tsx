@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { FileText, BarChart3, Share2, Zap } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeToggle } from '@/components/theme';
 
 export default function HomePage() {
   return (

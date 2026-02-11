@@ -1,4 +1,4 @@
-import { Navbar } from '@/components/dashboard/navbar';
+import { Navbar } from '@/components/dashboard';
 import { getUser } from '@/app/actions/auth';
 
 export default async function DashboardLayout({

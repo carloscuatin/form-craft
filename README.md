@@ -79,16 +79,30 @@ src/
 │   ├── adapters/supabase/        # Implementación Supabase
 │   └── mappers/                  # Transformación Domain ↔ DB
 │
-├── components/                   # 🎨 Componentes React
-│   ├── auth/                     # Formulario de login/registro
-│   ├── builder/                  # Builder: editor, preview, panel
-│   ├── dashboard/                # Cards, tablas, gráficas
-│   ├── forms/                    # Renderer dinámico de campos
-│   └── ui/                       # shadcn/ui base
+├── components/                   # 🎨 Componentes React (ver convenciones abajo)
+│   ├── auth/                     # Login/registro
+│   ├── builder/                  # Editor de formularios (layout, fields, preview, hooks)
+│   ├── dashboard/                # Listado, detalle, gráficas
+│   ├── forms/                    # Formulario público y renderer de campos
+│   ├── theme/                    # ThemeProvider, ThemeToggle
+│   └── ui/                       # shadcn/ui (primitivos)
 │
-├── hooks/                        # Custom hooks
 └── lib/                          # Utilidades (Supabase client, cn)
 ```
+
+### Convenciones de componentes (frontend)
+
+Cada **feature** (auth, dashboard, forms, builder, theme) es **autocontenido**: tiene su propio `index.ts` (API pública), y opcionalmente subcarpetas por responsabilidad. La app importa desde el barrel del feature, no por archivo.
+
+| Regla                  | Descripción                                                                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **API por feature**    | `import { AuthForm } from '@/components/auth'`, `import { FormBuilder } from '@/components/builder'`, etc.                                                                                             |
+| **ui/**                | Sin index; imports directos: `@/components/ui/button`, `@/components/ui/card` (patrón shadcn).                                                                                                         |
+| **Subcarpetas**        | Si un feature crece (ej. builder), se agrupa en `layout/`, `fields/`, `preview/`, `hooks/`, cada uno con su `index.ts`.                                                                                |
+| **Schemas y contexto** | Pertenecen al feature: `auth-form-schema.ts`, `form-builder-context.tsx`, `form-builder-schema.ts`.                                                                                                    |
+| **Hooks**              | No hay `components/hooks` global. Cada feature lleva sus hooks dentro (ej. `builder/hooks/`). Solo hooks de utilidad reutilizables (useDebounce, useMediaQuery) irían en `src/hooks/` si se necesitan. |
+| **Naming**             | Archivos en kebab-case; componentes/hooks en PascalCase/camelCase.                                                                                                                                     |
+| **Tests**              | `__tests__/` dentro del feature; imports relativos a archivos.                                                                                                                                         |
 
 ## Funcionalidades
 

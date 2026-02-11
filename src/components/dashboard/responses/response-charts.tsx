@@ -7,7 +7,7 @@ import { FormResponse } from '@/core/domain/entities/response';
 import { getChartResult } from '@/utils/chart';
 import { type ChartResult } from '@/types/chart';
 
-import { FieldChartGroup } from './charts';
+import { FieldChartGroup } from '../charts';
 
 interface ResponseChartsProps {
   fields: FormField[];

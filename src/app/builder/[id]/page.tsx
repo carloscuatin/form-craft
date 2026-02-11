@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { getForm } from '@/app/actions/forms';
-import { FormBuilder } from '@/components/builder/form-builder';
+import { FormBuilder } from '@/components/builder';
 
 interface EditFormPageProps {
   params: Promise<{ id: string }>;

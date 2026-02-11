@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { Navbar } from '../navbar';
+import { Navbar } from '../layout/navbar';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
@@ -13,7 +13,7 @@ jest.mock('@/app/actions/auth', () => ({
 }));
 
 // Mock ThemeToggle
-jest.mock('@/components/theme-toggle', () => ({
+jest.mock('@/components/theme', () => ({
   ThemeToggle: () => <div data-testid="theme-toggle" />,
 }));
 

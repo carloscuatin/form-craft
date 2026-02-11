@@ -11,20 +11,14 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FieldRenderer } from '@/components/forms/field-renderer';
-import { FormField } from '@/core/domain/entities/form';
+import { FieldRenderer } from '@/components/forms';
 
-interface FormPreviewProps {
-  title: string;
-  description: string;
-  fields: FormField[];
-}
+import { useFormBuilderContext } from '../form-builder-context';
 
-export const FormPreview: FC<FormPreviewProps> = ({
-  title,
-  description,
-  fields,
-}) => {
+export const FormPreview: FC = () => {
+  const { form, fields } = useFormBuilderContext();
+  const title = form.watch('title');
+  const description = form.watch('description');
   return (
     <div className="space-y-4">
       <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wider uppercase">

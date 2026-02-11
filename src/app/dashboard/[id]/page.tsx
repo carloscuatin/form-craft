@@ -3,12 +3,14 @@ import Link from 'next/link';
 import { ArrowLeft, Edit, BarChart3, Table } from 'lucide-react';
 
 import { getForm, getResponses } from '@/app/actions/forms';
-import { ResponseTable } from '@/components/dashboard/response-table';
-import { ResponseCharts } from '@/components/dashboard/response-charts';
+import {
+  ResponseTable,
+  ResponseCharts,
+  CopyLinkButton,
+} from '@/components/dashboard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CopyLinkButton } from '@/components/dashboard/copy-link-button';
 
 interface ResponseDetailPageProps {
   params: Promise<{ id: string }>;

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 
 import { getPublicForm } from '@/app/actions/forms';
-import { PublicForm } from '@/components/forms/public-form';
+import { PublicForm } from '@/components/forms';
 
 interface PublicFormPageProps {
   params: Promise<{ id: string }>;

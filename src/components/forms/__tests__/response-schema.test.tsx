@@ -1,7 +1,7 @@
 import { FormField } from '@/core/domain/entities/form';
 
-import { buildResponseSchema } from '../response-schema';
-import { buildResponseDefaults } from '../form-defaults';
+import { buildResponseSchema } from '../public/response-schema';
+import { buildResponseDefaults } from '../public/form-defaults';
 
 describe('buildResponseSchema', () => {
   it('should require short_text when field is required', () => {

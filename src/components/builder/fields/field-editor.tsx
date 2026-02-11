@@ -8,24 +8,22 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { FormField } from '@/core/domain/entities/form';
 import { FIELD_TYPE_LABELS } from '@/core/domain/value-objects/field-types';
 
-interface FieldEditorProps {
-  field: FormField;
-  onUpdate: (updates: Partial<FormField>) => void;
-  onAddOption: () => void;
-  onUpdateOption: (optionId: string, label: string) => void;
-  onRemoveOption: (optionId: string) => void;
-}
+import { useFormBuilderContext } from '../form-builder-context';
 
-export const FieldEditor: FC<FieldEditorProps> = ({
-  field,
-  onUpdate,
-  onAddOption,
-  onUpdateOption,
-  onRemoveOption,
-}) => {
+export const FieldEditor: FC = () => {
+  const {
+    selectedField: field,
+    selectedFieldId,
+    updateField,
+    addOption,
+    updateOption,
+    removeOption,
+  } = useFormBuilderContext();
+
+  if (!field || !selectedFieldId) return null;
+
   return (
     <div className="space-y-5">
       <div>
@@ -48,7 +46,9 @@ export const FieldEditor: FC<FieldEditorProps> = ({
           <Input
             id="field-label"
             value={field.label}
-            onChange={(e) => onUpdate({ label: e.target.value })}
+            onChange={(e) =>
+              updateField(selectedFieldId, { label: e.target.value })
+            }
             placeholder="Nombre del campo"
             className="h-9 text-sm"
           />
@@ -64,7 +64,9 @@ export const FieldEditor: FC<FieldEditorProps> = ({
           <Input
             id="field-placeholder"
             value={field.placeholder ?? ''}
-            onChange={(e) => onUpdate({ placeholder: e.target.value })}
+            onChange={(e) =>
+              updateField(selectedFieldId, { placeholder: e.target.value })
+            }
             placeholder="Texto de ejemplo"
             className="h-9 text-sm"
           />
@@ -75,7 +77,7 @@ export const FieldEditor: FC<FieldEditorProps> = ({
             id="field-required"
             checked={field.required}
             onCheckedChange={(checked) =>
-              onUpdate({ required: checked === true })
+              updateField(selectedFieldId, { required: checked === true })
             }
           />
           <Label
@@ -100,7 +102,9 @@ export const FieldEditor: FC<FieldEditorProps> = ({
                   </span>
                   <Input
                     value={option.label}
-                    onChange={(e) => onUpdateOption(option.id, e.target.value)}
+                    onChange={(e) =>
+                      updateOption(selectedFieldId, option.id, e.target.value)
+                    }
                     placeholder={`Opción ${index + 1}`}
                     className="h-8 flex-1 text-sm"
                   />
@@ -108,7 +112,7 @@ export const FieldEditor: FC<FieldEditorProps> = ({
                     variant="ghost"
                     size="sm"
                     className="text-muted-foreground h-8 w-8 p-0 hover:text-red-500"
-                    onClick={() => onRemoveOption(option.id)}
+                    onClick={() => removeOption(selectedFieldId, option.id)}
                     disabled={(field.options?.length ?? 0) <= 1}
                   >
                     <X className="h-3.5 w-3.5" />
@@ -120,7 +124,7 @@ export const FieldEditor: FC<FieldEditorProps> = ({
               variant="outline"
               size="sm"
               className="h-8 w-full text-xs"
-              onClick={onAddOption}
+              onClick={() => addOption(selectedFieldId)}
             >
               <Plus className="mr-1 h-3 w-3" />
               Agregar opción

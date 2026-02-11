@@ -22,12 +22,3 @@ export const FIELD_TYPE_LABELS: Record<FieldType, string> = {
   [FIELD_TYPES.SINGLE_SELECT]: 'Selección única',
   [FIELD_TYPES.MULTI_SELECT]: 'Selección múltiple',
 };
-
-export const FIELD_TYPE_ICONS: Record<FieldType, string> = {
-  [FIELD_TYPES.SHORT_TEXT]: 'Type',
-  [FIELD_TYPES.LONG_TEXT]: 'AlignLeft',
-  [FIELD_TYPES.NUMBER]: 'Hash',
-  [FIELD_TYPES.DATE]: 'Calendar',
-  [FIELD_TYPES.SINGLE_SELECT]: 'CircleDot',
-  [FIELD_TYPES.MULTI_SELECT]: 'CheckSquare',
-};

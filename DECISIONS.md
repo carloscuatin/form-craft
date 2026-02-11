@@ -46,28 +46,34 @@ Se usa **JSONB** para dos columnas clave:
 
 ---
 
-## 3. Frontend: Arquitectura de Componentes
+## 3. Frontend: Arquitectura de Componentes por Features (autocontenidos)
 
 ### Decisión
 
-Estructura basada en **arquitectura de componentes** con separación por dominio funcional:
+El frontend sigue una **arquitectura de componentes por feature**, donde cada feature (auth, dashboard, forms, builder, theme) es **autocontenido**: tiene su propio `index.ts` como API pública, y agrupa dentro de sí componentes, hooks, contexto y schemas. No hay carpeta global `components/hooks`; cada feature lleva sus hooks en una subcarpeta `hooks/` si los necesita (ej. `builder/hooks/`).
+
+Estructura actual:
 
 ```
-src/
-  components/
-    auth/         → Componentes de autenticación
-    builder/      → Form builder (editor, panel, preview)
-    forms/        → Renderizado dinámico de campos
-    dashboard/    → Cards, tablas, gráficas
-    ui/           → Componentes base (shadcn/ui)
-  hooks/          → Custom hooks (useFormBuilder)
+components/
+  auth/         → AuthForm, auth-form-schema (index exporta la API)
+  builder/      → form-builder, context, schema + layout/, fields/, preview/, hooks/
+  dashboard/    → Navbar, FormCard, EmptyState, ResponseTable, etc. + charts/
+  forms/        → PublicForm, FieldRenderer, response-schema, form-defaults
+  theme/        → ThemeProvider, ThemeToggle
+  ui/           → Primitivos shadcn (sin index; import por archivo)
 ```
+
+Las páginas importan desde el barrel del feature: `import { FormBuilder } from '@/components/builder'`, `import { AuthForm } from '@/components/auth'`. La convención completa está en el [README principal](./README.md#convenciones-de-componentes-frontend).
 
 ### Justificación
 
-- **Reutilización**: `FieldRenderer` se usa tanto en el preview del builder como en el formulario público.
-- **Encapsulación de lógica**: `useFormBuilder` hook encapsula toda la lógica del builder (CRUD de campos, drag & drop, opciones).
-- **Composición**: Componentes pequeños y enfocados que se componen para crear vistas complejas.
+- **Colocación por feature**: Todo lo que pertenece a un flujo (login, builder, dashboard) vive junto. Cambios en el builder no dispersan archivos por `components/` y `hooks/`; todo está en `builder/`.
+- **API pública clara**: El `index.ts` de cada feature define qué se expone al resto de la app. El resto son detalles internos del feature (layout, campos, hooks), lo que reduce acoplamiento y facilita refactors.
+- **Hooks por feature, no globales**: Evitamos un cajón de sastre `src/hooks/` con lógica de un solo feature. Cada feature lleva sus hooks (use-form-builder, use-form-builder-dnd, use-form-builder-save en `builder/hooks/`). Solo hooks de utilidad realmente reutilizables (useDebounce, useMediaQuery) tendrían sentido en `src/hooks/` si se añaden.
+- **Escalabilidad**: Si un feature crece (como el builder), se subdivide en subcarpetas (layout, fields, preview, hooks) con sus propios `index.ts`, sin contaminar la raíz de `components/`.
+- **Reutilización controlada**: `FieldRenderer` se usa en el preview del builder y en el formulario público; se exporta desde `@/components/forms` y el builder lo importa desde ahí, manteniendo una única fuente de verdad.
+- **Composición**: Componentes pequeños y enfocados que se componen por feature; la app orquesta features, no decenas de componentes sueltos.
 
 ---
 

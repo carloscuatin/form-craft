@@ -11,21 +11,20 @@ import { FormField } from '@/core/domain/entities/form';
 import { FIELD_TYPE_LABELS } from '@/core/domain/value-objects/field-types';
 import { cn } from '@/utils/cn';
 
+import { useFormBuilderContext } from '../form-builder-context';
+
 interface SortableFieldItemProps {
   field: FormField;
-  isSelected: boolean;
-  onSelect: () => void;
-  onRemove: () => void;
-  onDuplicate: () => void;
 }
 
-export const SortableFieldItem: FC<SortableFieldItemProps> = ({
-  field,
-  isSelected,
-  onSelect,
-  onRemove,
-  onDuplicate,
-}) => {
+export const SortableFieldItem: FC<SortableFieldItemProps> = ({ field }) => {
+  const { selectedFieldId, setSelectedFieldId, removeField, duplicateField } =
+    useFormBuilderContext();
+
+  const isSelected = selectedFieldId === field.id;
+  const onSelect = () => setSelectedFieldId(field.id);
+  const onRemove = () => removeField(field.id);
+  const onDuplicate = () => duplicateField(field.id);
   const {
     attributes,
     listeners,
@@ -40,13 +39,32 @@ export const SortableFieldItem: FC<SortableFieldItemProps> = ({
     transition,
   };
 
+  if (isDragging) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="rounded-lg border-2 border-dashed border-indigo-300/60 bg-indigo-50/30 p-3 dark:border-indigo-700/40 dark:bg-indigo-950/10"
+      >
+        <div className="invisible flex items-center gap-2">
+          <GripVertical className="h-4 w-4" />
+          <div className="min-w-0 flex-1">
+            <span className="text-sm">{field.label || 'Campo sin nombre'}</span>
+            <Badge variant="secondary" className="mt-1 h-5 text-[10px]">
+              {FIELD_TYPE_LABELS[field.type]}
+            </Badge>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group flex cursor-pointer items-center gap-2 rounded-lg border p-3 transition-all',
-        isDragging && 'opacity-50 shadow-lg',
+        'group flex cursor-pointer items-center gap-2 rounded-lg border p-3 transition-colors',
         isSelected
           ? 'border-indigo-300 bg-indigo-50/50 ring-1 ring-indigo-200 dark:border-indigo-700 dark:bg-indigo-950/30 dark:ring-indigo-800'
           : 'border-border hover:border-border/80 bg-card',

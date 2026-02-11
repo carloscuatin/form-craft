@@ -1,6 +1,5 @@
 import { getForms } from '@/app/actions/forms';
-import { FormCard } from '@/components/dashboard/form-card';
-import { EmptyState } from '@/components/dashboard/empty-state';
+import { FormCard, EmptyState } from '@/components/dashboard';
 
 export default async function DashboardPage() {
   const { data: forms, error } = await getForms();

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { FileText, LogOut, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { ThemeToggle } from '@/components/theme';
 import { signOut } from '@/app/actions/auth';
 
 interface NavbarProps {

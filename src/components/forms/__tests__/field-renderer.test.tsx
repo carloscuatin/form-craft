@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import { FormField } from '@/core/domain/entities/form';
 
-import { FieldRenderer } from '../field-renderer';
+import { FieldRenderer } from '../renderer/field-renderer';
 
 // Mock Radix UI Select (uses portals that don't work in jsdom)
 jest.mock('@/components/ui/select', () => ({

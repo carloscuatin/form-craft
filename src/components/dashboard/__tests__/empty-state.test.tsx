@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { EmptyState } from '../empty-state';
+import { EmptyState } from '../list/empty-state';
 
 describe('EmptyState', () => {
   it('should render the heading', () => {
