@@ -19,7 +19,7 @@ export const FieldTypeDragOverlay: FC<FieldTypeDragOverlayProps> = ({
   const Icon = FIELD_TYPE_ICON_MAP[type];
 
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-indigo-300 bg-white px-4 py-3 shadow-lg dark:border-indigo-700 dark:bg-gray-900">
+    <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-indigo-300 bg-white px-4 py-3 text-center shadow-lg dark:border-indigo-700 dark:bg-gray-900">
       <Icon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
       <span className="text-sm font-medium">{FIELD_TYPE_LABELS[type]}</span>
     </div>

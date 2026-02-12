@@ -79,30 +79,30 @@ src/
 │   ├── adapters/supabase/        # Implementación Supabase
 │   └── mappers/                  # Transformación Domain ↔ DB
 │
-├── components/                   # 🎨 Componentes React (ver convenciones abajo)
-│   ├── auth/                     # Login/registro
-│   ├── builder/                  # Editor de formularios (layout, fields, preview, hooks)
-│   ├── dashboard/                # Listado, detalle, gráficas
-│   ├── forms/                    # Formulario público y renderer de campos
-│   ├── theme/                    # ThemeProvider, ThemeToggle
-│   └── ui/                       # shadcn/ui (primitivos)
+├── components/                   # 🎨 Vertical slicing (por feature)
+│   ├── auth/                     # Slice: login/registro
+│   ├── builder/                  # Slice: editor (layout, fields, preview, hooks)
+│   ├── dashboard/                # Slice: listado, detalle, gráficas
+│   ├── forms/                    # Slice: formulario público y renderer
+│   ├── theme/                    # Slice: ThemeProvider, ThemeToggle
+│   └── ui/                       # Primitivos shadcn (sin slice; import por archivo)
 │
 └── lib/                          # Utilidades (Supabase client, cn)
 ```
 
-### Convenciones de componentes (frontend)
+### Convenciones de componentes (vertical slicing)
 
-Cada **feature** (auth, dashboard, forms, builder, theme) es **autocontenido**: tiene su propio `index.ts` (API pública), y opcionalmente subcarpetas por responsabilidad. La app importa desde el barrel del feature, no por archivo.
+El frontend usa **vertical slicing** (arquitectura por features): cada **slice** (auth, dashboard, forms, builder, theme) es una unidad vertical autocontenida con su propio `index.ts` (API pública) y, opcionalmente, subcarpetas por responsabilidad. La app importa desde el barrel del slice, no por archivo. Detalle en [DECISIONS.md §3](./DECISIONS.md#3-frontend-vertical-slicing-arquitectura-por-features).
 
-| Regla                  | Descripción                                                                                                                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **API por feature**    | `import { AuthForm } from '@/components/auth'`, `import { FormBuilder } from '@/components/builder'`, etc.                                                                                             |
-| **ui/**                | Sin index; imports directos: `@/components/ui/button`, `@/components/ui/card` (patrón shadcn).                                                                                                         |
-| **Subcarpetas**        | Si un feature crece (ej. builder), se agrupa en `layout/`, `fields/`, `preview/`, `hooks/`, cada uno con su `index.ts`.                                                                                |
-| **Schemas y contexto** | Pertenecen al feature: `auth-form-schema.ts`, `form-builder-context.tsx`, `form-builder-schema.ts`.                                                                                                    |
-| **Hooks**              | No hay `components/hooks` global. Cada feature lleva sus hooks dentro (ej. `builder/hooks/`). Solo hooks de utilidad reutilizables (useDebounce, useMediaQuery) irían en `src/hooks/` si se necesitan. |
-| **Naming**             | Archivos en kebab-case; componentes/hooks en PascalCase/camelCase.                                                                                                                                     |
-| **Tests**              | `__tests__/` dentro del feature; imports relativos a archivos.                                                                                                                                         |
+| Regla                  | Descripción                                                                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **API por slice**      | `import { AuthForm } from '@/components/auth'`, `import { FormBuilder } from '@/components/builder'`, etc.                                                         |
+| **ui/**                | Sin index; imports directos: `@/components/ui/button`, `@/components/ui/card` (patrón shadcn).                                                                     |
+| **Subcarpetas**        | Si un slice crece (ej. builder), se agrupa en `layout/`, `fields/`, `preview/`, `hooks/`, cada uno con su `index.ts`.                                              |
+| **Schemas y contexto** | Pertenecen al slice: `auth-form-schema.ts`, `form-builder-context.tsx`, `form-builder-schema.ts`.                                                                  |
+| **Hooks**              | No hay `components/hooks` global. Cada slice lleva sus hooks dentro (ej. `builder/hooks/`). Hooks de utilidad reutilizables irían en `src/hooks/` si se necesitan. |
+| **Naming**             | Archivos en kebab-case; componentes/hooks en PascalCase/camelCase.                                                                                                 |
+| **Tests**              | `__tests__/` dentro del slice; imports relativos a archivos.                                                                                                       |
 
 ## Funcionalidades
 
@@ -125,7 +125,7 @@ Cada **feature** (auth, dashboard, forms, builder, theme) es **autocontenido**: 
 ### Arquitectura
 
 - ✅ Arquitectura Hexagonal (Clean Architecture) en backend
-- ✅ Arquitectura de Componentes en frontend
+- ✅ Arquitectura por componentes, estructura en vertical slicing (por features) en frontend
 - ✅ TypeScript estricto
 - ✅ Separación de responsabilidades
 

@@ -110,9 +110,9 @@ export const useFormBuilder = (initialData?: FormBuilderData) => {
   /** Reorder fields after drag & drop */
   const reorderFields = (activeId: string, overId: string) => {
     const oldIndex = fields.findIndex((f) => f.id === activeId);
-    const newIndex = fields.findIndex((f) => f.id === overId);
-    if (oldIndex === -1 || newIndex === -1) return;
-    fieldArray.move(oldIndex, newIndex);
+    const overIndex = fields.findIndex((f) => f.id === overId);
+    if (oldIndex === -1 || overIndex === -1) return;
+    fieldArray.move(oldIndex, overIndex);
   };
 
   /** Add option to a select field */

@@ -2,8 +2,6 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import {
-  pointerWithin,
-  closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -11,12 +9,17 @@ import {
   type DragEndEvent,
   type DragStartEvent,
   type DragOverEvent,
-  type CollisionDetection,
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 
 import type { FieldType } from '@/core/domain/value-objects/field-types';
+import { createListCollisionDetection } from '@/utils/dnd/collision-detection';
+import {
+  getOverId,
+  resolveNewItemInsertionIndex,
+} from '@/utils/dnd/insertion-index';
 
+import { DND_POINTER_ACTIVATION_DISTANCE } from '../constants';
 import { useFormBuilderContext } from '../form-builder-context';
 import { DROP_ZONE_ID } from '../fields';
 
@@ -31,33 +34,31 @@ export function useFormBuilderDnD() {
   const [activeDragType, setActiveDragType] = useState<FieldType | null>(null);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [insertionIndex, setInsertionIndex] = useState<number | null>(null);
   const [dragWidth, setDragWidth] = useState<number | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: DND_POINTER_ACTIVATION_DISTANCE },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
 
-  const collisionDetection: CollisionDetection = useCallback((args) => {
-    if (args.active.data.current?.isNewField) {
-      const pointerCollisions = pointerWithin(args);
-      if (pointerCollisions.length > 0) return pointerCollisions;
-      return [];
-    }
-    return closestCenter({
-      ...args,
-      droppableContainers: args.droppableContainers.filter(
-        (c) => c.id !== DROP_ZONE_ID,
-      ),
-    });
-  }, []);
+  const collisionDetection = useMemo(
+    () =>
+      createListCollisionDetection({
+        dropZoneId: DROP_ZONE_ID,
+      }),
+    [],
+  );
 
   const clearDragState = useCallback(() => {
     setActiveDragType(null);
     setActiveDragId(null);
     setOverId(null);
+    setInsertionIndex(null);
     setDragWidth(null);
   }, []);
 
@@ -77,37 +78,67 @@ export function useFormBuilderDnD() {
   const handleDragOver = useCallback(
     (event: DragOverEvent) => {
       const { active, over } = event;
-      setOverId(over?.id != null ? String(over.id) : null);
+      const newOverId = getOverId(over);
+      setOverId((prev) => (prev === newOverId ? prev : newOverId));
 
-      if (
-        !active.data.current?.isNewField &&
-        over &&
-        active.id !== over.id &&
-        over.id !== DROP_ZONE_ID
-      ) {
-        reorderFields(String(active.id), String(over.id));
+      if (!active.data.current?.isNewField) {
+        setInsertionIndex((prev) => (prev === null ? prev : null));
+        return;
       }
+
+      const nextIndex = resolveNewItemInsertionIndex({
+        overId: newOverId,
+        overRect: over?.rect ?? null,
+        activeRect: active.rect.current.translated,
+        items: fields,
+        dropZoneId: DROP_ZONE_ID,
+      });
+      setInsertionIndex((prev) => (prev === nextIndex ? prev : nextIndex));
     },
-    [reorderFields],
+    [fields],
   );
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
-      clearDragState();
-      if (!over) return;
+      const overId = getOverId(over);
+
+      if (overId == null || !over) {
+        clearDragState();
+        return;
+      }
 
       if (active.data.current?.isNewField) {
         const type = active.data.current.type as FieldType;
-        if (over.id === DROP_ZONE_ID) {
-          addField(type);
-        } else {
-          const overIndex = fields.findIndex((f) => f.id === over.id);
-          if (overIndex !== -1) addFieldAt(type, overIndex);
+        const targetIndex =
+          insertionIndex != null
+            ? Math.max(0, Math.min(insertionIndex, fields.length))
+            : resolveNewItemInsertionIndex({
+                overId,
+                overRect: over.rect,
+                activeRect: active.rect.current.translated,
+                items: fields,
+                dropZoneId: DROP_ZONE_ID,
+              });
+
+        if (targetIndex != null) {
+          if (targetIndex >= fields.length) addField(type);
+          else addFieldAt(type, targetIndex);
         }
+      } else if (overId !== DROP_ZONE_ID && overId !== String(active.id)) {
+        reorderFields(String(active.id), overId);
       }
+
+      clearDragState();
     },
-    [addField, addFieldAt, fields, clearDragState],
+    [
+      addField,
+      addFieldAt,
+      fields,
+      insertionIndex,
+      reorderFields,
+      clearDragState,
+    ],
   );
 
   const activeField = useMemo(
@@ -135,5 +166,6 @@ export function useFormBuilderDnD() {
     activeField,
     isDropTarget,
     dragWidth,
+    insertionIndex,
   };
 }

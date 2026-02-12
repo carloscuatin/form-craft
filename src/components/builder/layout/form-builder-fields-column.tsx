@@ -1,6 +1,6 @@
 'use client';
 
-import { type FC } from 'react';
+import { type FC, Fragment } from 'react';
 import { Layers } from 'lucide-react';
 import {
   SortableContext,
@@ -10,17 +10,21 @@ import {
 import { useFormBuilderContext } from '../form-builder-context';
 import { FieldsDropZone, SortableFieldItem } from '../fields';
 import type { FormBuilderTab } from './form-builder-tabs';
+import { InsertionSpacer } from './insertion-spacer';
 
 interface FormBuilderFieldsColumnProps {
   activeTab: FormBuilderTab;
   isDropTarget: boolean;
+  insertionIndex: number | null;
 }
 
 export const FormBuilderFieldsColumn: FC<FormBuilderFieldsColumnProps> = ({
   activeTab,
   isDropTarget,
+  insertionIndex,
 }) => {
   const { fields } = useFormBuilderContext();
+  const showInsertionGap = insertionIndex !== null;
 
   return (
     <div
@@ -51,9 +55,17 @@ export const FormBuilderFieldsColumn: FC<FormBuilderFieldsColumnProps> = ({
               </div>
             ) : (
               <div className="space-y-2">
-                {fields.map((field) => (
-                  <SortableFieldItem key={field.id} field={field} />
+                {fields.map((field, index) => (
+                  <Fragment key={field.id}>
+                    {showInsertionGap && insertionIndex === index && (
+                      <InsertionSpacer />
+                    )}
+                    <SortableFieldItem field={field} />
+                  </Fragment>
                 ))}
+                {showInsertionGap && insertionIndex === fields.length && (
+                  <InsertionSpacer />
+                )}
               </div>
             )}
           </FieldsDropZone>

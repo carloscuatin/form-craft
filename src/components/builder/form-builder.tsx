@@ -41,6 +41,7 @@ const FormBuilderInner: FC<{ formId?: string }> = ({ formId }) => {
     activeField,
     isDropTarget,
     dragWidth,
+    insertionIndex,
   } = useFormBuilderDnD();
 
   return (
@@ -62,6 +63,7 @@ const FormBuilderInner: FC<{ formId?: string }> = ({ formId }) => {
             <FormBuilderFieldsColumn
               activeTab={activeTab}
               isDropTarget={isDropTarget}
+              insertionIndex={insertionIndex}
             />
             <div
               className={`lg:col-span-4 ${

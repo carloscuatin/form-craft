@@ -20,7 +20,10 @@ const config: Config = {
       preset: 'ts-jest',
       testEnvironment: 'jsdom',
       roots: ['<rootDir>/src'],
-      testMatch: ['<rootDir>/src/components/**/__tests__/**/*.test.tsx'],
+      testMatch: [
+        '<rootDir>/src/components/**/__tests__/**/*.test.tsx',
+        '<rootDir>/src/utils/**/__tests__/**/*.test.ts',
+      ],
       moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
       },
