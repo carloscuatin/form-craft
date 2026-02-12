@@ -45,7 +45,7 @@ export const PublicForm: FC<PublicFormProps> = ({ form }) => {
     defaultValues: defaults,
   });
 
-  async function onSubmit(data: Record<string, unknown>) {
+  const onSubmit = async (data: Record<string, unknown>) => {
     try {
       const result = await submitResponse({
         formId: form.id,
@@ -60,7 +60,7 @@ export const PublicForm: FC<PublicFormProps> = ({ form }) => {
     } catch {
       toast.error('Error al enviar la respuesta');
     }
-  }
+  };
 
   return (
     <div className="from-background via-background flex min-h-screen items-center justify-center bg-linear-to-br to-indigo-50/30 p-4 dark:to-indigo-950/20">

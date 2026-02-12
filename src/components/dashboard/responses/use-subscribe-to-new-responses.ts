@@ -10,10 +10,10 @@ import { createSubscribeToNewResponsesUseCase } from '@/infrastructure/browser-c
  * Calls onNewResponse when a new response is inserted; cleanup unsubscribes.
  * You can pass the callback inline — the hook keeps the latest reference and does not re-subscribe on every render.
  */
-export function useSubscribeToNewResponses(
+export const useSubscribeToNewResponses = (
   formId: string,
   onNewResponse: (response: FormResponse) => void,
-): void {
+): void => {
   const onNewResponseRef = useRef(onNewResponse);
 
   const subscribeToNewResponses = useMemo(
@@ -31,4 +31,4 @@ export function useSubscribeToNewResponses(
     });
     return unsubscribe;
   }, [formId, subscribeToNewResponses]);
-}
+};

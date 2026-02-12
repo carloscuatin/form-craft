@@ -41,7 +41,7 @@ export const AuthForm: FC<AuthFormProps> = ({ mode }) => {
     defaultValues: { name: '', email: '', password: '' },
   });
 
-  async function onSubmit(data: AuthFormData) {
+  const onSubmit = async (data: AuthFormData) => {
     setServerError(null);
 
     try {
@@ -56,7 +56,7 @@ export const AuthForm: FC<AuthFormProps> = ({ mode }) => {
       // Redirect happens via server action
       router.refresh();
     }
-  }
+  };
 
   return (
     <div className="from-background via-background flex min-h-screen items-center justify-center bg-linear-to-br to-indigo-50/30 p-4 dark:to-indigo-950/20">

@@ -10,6 +10,7 @@ Aplicación web para crear formularios personalizados con drag & drop, compartir
 - **UI**: shadcn/ui + Tailwind CSS
 - **Drag & Drop**: @dnd-kit
 - **Gráficas**: Recharts
+- **Testing**: Jest (unit) + Playwright (E2E)
 - **Deployment**: Vercel
 
 ## Requisitos Previos
@@ -48,13 +49,58 @@ NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu-publishable-key
 ```
 
-### 5. Ejecutar en desarrollo
+### 5. (Opcional) Activar protección de rutas con middleware
+
+La lógica de redirección (proteger `/dashboard` y `/builder`, redirigir a login si no hay sesión) está en `src/proxy.ts`. Para que Next.js la ejecute, crea en la **raíz del proyecto** un archivo `middleware.ts` con:
+
+```ts
+export { proxy as default } from '@/proxy';
+```
+
+Si no creas este archivo, las rutas no se redirigen por middleware (las Server Actions seguirán comprobando auth con `requireAuth()` y mostrarán error en dashboard si no hay sesión). Detalle en [DECISIONS.md §15](./DECISIONS.md#15-middleware-de-protección-de-rutas-proxy).
+
+### 6. Ejecutar en desarrollo
 
 ```bash
 npm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+
+## Testing
+
+### Tests unitarios (Jest)
+
+```bash
+npm run test           # ejecutar tests
+npm run test:watch     # modo watch
+npm run test:coverage  # cobertura
+```
+
+Los tests unitarios viven en `__tests__/` dentro de cada slice o módulo (p. ej. `components/auth/__tests__/`, `core/use-cases/__tests__/`).
+
+### Tests E2E (Playwright)
+
+```bash
+npm run test:e2e       # ejecutar tests E2E (Chromium, Firefox, WebKit)
+npm run test:e2e:ui    # interfaz gráfica de Playwright
+```
+
+Los tests E2E están en `tests/e2e/`. Playwright arranca el servidor de desarrollo (`npm run dev`) si no está ya en marcha.
+
+**Tests que requieren login:** Algunos tests del dashboard (flujo tras iniciar sesión) solo se ejecutan si defines las variables de entorno `E2E_TEST_EMAIL` y `E2E_TEST_PASSWORD`. Si no están definidas, esos tests se omiten.
+
+```bash
+E2E_TEST_EMAIL=tu@email.com E2E_TEST_PASSWORD=tupassword npm run test:e2e
+```
+
+La primera vez, instala los navegadores de Playwright:
+
+```bash
+npx playwright install
+```
+
+La decisión de usar Jest + Playwright y la estructura de tests E2E se documenta en [DECISIONS.md §10](./DECISIONS.md#10-testing-jest-unit--playwright-e2e).
 
 ## Estructura del Proyecto
 
@@ -63,14 +109,14 @@ src/
 ├── app/                          # Next.js App Router
 │   ├── actions/                  # Server Actions (orquestación)
 │   ├── builder/                  # Editor de formularios
-│   ├── dashboard/                # Dashboard + detalle de respuestas
-│   ├── forms/[id]/               # Formulario público
-│   ├── login/                    # Página de login
-│   └── register/                 # Página de registro
+│   ├── dashboard/               # Dashboard + detalle de respuestas
+│   ├── forms/[id]/              # Formulario público
+│   ├── login/                   # Página de login
+│   └── register/                # Página de registro
 │
 ├── core/                         # 🏛️ Arquitectura Hexagonal
 │   ├── domain/
-│   │   ├── entities/             # Form, Response
+│   │   ├── entities/             # Form, Response, User
 │   │   ├── ports/                # Interfaces de repositorios
 │   │   └── value-objects/        # FieldType, constantes
 │   └── use-cases/                # Casos de uso del negocio
@@ -80,14 +126,20 @@ src/
 │   └── mappers/                  # Transformación Domain ↔ DB
 │
 ├── components/                   # 🎨 Vertical slicing (por feature)
-│   ├── auth/                     # Slice: login/registro
+│   ├── auth/                    # Slice: login/registro
 │   ├── builder/                  # Slice: editor (layout, fields, preview, hooks)
 │   ├── dashboard/                # Slice: listado, detalle, gráficas
 │   ├── forms/                    # Slice: formulario público y renderer
 │   ├── theme/                    # Slice: ThemeProvider, ThemeToggle
 │   └── ui/                       # Primitivos shadcn (sin slice; import por archivo)
 │
-└── lib/                          # Utilidades (Supabase client, cn)
+├── utils/                        # Utilidades (chart, cn, etc.)
+└── proxy.ts                      # Middleware de auth (protección de rutas)
+
+tests/
+└── e2e/                          # Tests E2E con Playwright
+    ├── home.spec.ts              # Home, navegación, tema
+    └── dashboard.spec.ts         # Dashboard (auth, empty state, builder)
 ```
 
 ### Convenciones de componentes (vertical slicing)
@@ -109,7 +161,7 @@ El frontend usa **vertical slicing** (arquitectura por features): cada **slice**
 ### Core (Implementado)
 
 - ✅ Autenticación (login/registro) con Supabase Auth
-- ✅ Protección de rutas con middleware
+- ✅ Protección de rutas (lógica en `src/proxy.ts`; ver [DECISIONS.md §15](./DECISIONS.md#15-middleware-de-protección-de-rutas-proxy) para activarla con `middleware.ts`)
 - ✅ Form Builder con drag & drop
 - ✅ 6 tipos de campo: texto corto, texto largo, número, fecha, selección única, selección múltiple
 - ✅ Vista previa en tiempo real
@@ -139,7 +191,16 @@ supabase/migrations/20260208033356_initial_schema.sql
 
 ## Decisiones Técnicas
 
-Ver [DECISIONS.md](./DECISIONS.md) para una explicación detallada de las decisiones de arquitectura, librerías y trade-offs.
+Ver [DECISIONS.md](./DECISIONS.md) para el **por qué** de las decisiones de arquitectura, librerías y trade-offs. Incluye, entre otros:
+
+- §1–2 Arquitectura hexagonal y esquema JSONB
+- §3 Vertical slicing en el frontend
+- §4 Librerías (shadcn, Recharts, next-themes, Zod, etc.)
+- §5–6 Auth bajo hexagonal y RLS (respuestas anónimas)
+- §10 Testing (Jest + Playwright)
+- §12–14 Composition root, clientes Supabase, Realtime
+- §15 Middleware de protección de rutas
+- §16 Husky, lint-staged, Prettier, ESLint
 
 ## Credenciales de Prueba
 

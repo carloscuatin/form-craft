@@ -14,10 +14,10 @@ export type { ChartResult } from '@/types/chart';
 export { getChartColor } from './colors';
 
 /** Resolves the chart data for a given field based on its type */
-export function getChartResult(
+export const getChartResult = (
   field: FormField,
   responses: FormResponse[],
-): ChartResult | null {
+): ChartResult | null => {
   switch (field.type) {
     case FIELD_TYPES.SINGLE_SELECT:
     case FIELD_TYPES.MULTI_SELECT:
@@ -25,4 +25,4 @@ export function getChartResult(
     default:
       return null;
   }
-}
+};

@@ -79,13 +79,19 @@ Las páginas importan desde el barrel del feature: `import { FormBuilder } from 
 
 ## 4. Librerías Elegidas
 
-| Librería      | Propósito            | Justificación                                                                                         |
-| ------------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
-| **shadcn/ui** | Componentes base     | Componentes accesibles, tipados, y personalizables. No es una dependencia — el código es tuyo.        |
-| **@dnd-kit**  | Drag & Drop          | Modular, buen soporte de teclado/accesibilidad, mejor mantenido que react-beautiful-dnd (deprecated). |
-| **Recharts**  | Gráficas             | API declarativa, basado en SVG, buen soporte de TypeScript y responsive.                              |
-| **Sonner**    | Notificaciones toast | Ligero, animaciones suaves, integración nativa con shadcn.                                            |
-| **DM Sans**   | Tipografía           | Fuente geométrica moderna con excelente legibilidad en UI.                                            |
+| Librería                           | Propósito                   | Justificación                                                                                         |
+| ---------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **shadcn/ui**                      | Componentes base            | Componentes accesibles, tipados, y personalizables. No es una dependencia — el código es tuyo.        |
+| **@dnd-kit**                       | Drag & Drop                 | Modular, buen soporte de teclado/accesibilidad, mejor mantenido que react-beautiful-dnd (deprecated). |
+| **Recharts**                       | Gráficas                    | API declarativa, basado en SVG, buen soporte de TypeScript y responsive.                              |
+| **Sonner**                         | Notificaciones toast        | Ligero, animaciones suaves, integración nativa con shadcn.                                            |
+| **next-themes**                    | Tema claro/oscuro/sistema   | Integración con React, persiste preferencia, evita flash; se usa con `ThemeProvider` y `ThemeToggle`. |
+| **class-variance-authority (cva)** | Variantes de componentes    | Usado por shadcn para variantes (e.g. `button({ variant: 'outline' })`).                              |
+| **clsx** + **tailwind-merge**      | Clases condicionales (`cn`) | `utils/cn.ts` combina ambas: clases condicionales sin conflictos de Tailwind.                         |
+| **tw-animate-css**                 | Animaciones                 | Animaciones para componentes shadcn (dropdowns, dialogs).                                             |
+| **Tailwind CSS v4**                | Estilos                     | Utility-first; v4 con `@import 'tailwindcss'` y PostCSS.                                              |
+| **Zod v4**                         | Validación y tipos          | Schemas de validación; tipos inferidos con `z.infer<>`; usados en dominio y formularios.              |
+| **DM Sans** + **JetBrains Mono**   | Tipografía                  | DM Sans para UI (layout); JetBrains Mono para código/mono si se usa.                                  |
 
 ---
 
@@ -127,6 +133,10 @@ El middleware de Next.js mantiene acceso directo a Supabase porque necesita mani
 ### Decisión clave
 
 Se creó una **función RPC** (`get_form_with_response_count`) con `SECURITY DEFINER` para obtener formularios con conteo de respuestas en una sola query, evitando N+1 queries y respetando RLS.
+
+### Respuestas anónimas
+
+Las respuestas a formularios públicos son **anónimas**: quien envía no necesita cuenta. Una migración posterior (`20260210001249_drop_anon_select_responses.sql`) eliminó la política que permitía a `anon` leer respuestas. Así, el rol anónimo solo puede **INSERT**; solo el creador del formulario (usuario autenticado vía RLS) puede **SELECT** sobre sus respuestas. No se almacena identidad del encuestado.
 
 ---
 
@@ -190,7 +200,33 @@ Agrega dos dependencias (`react-hook-form`, `@hookform/resolvers`), pero elimina
 
 ---
 
-## 10. Server Actions vs API Routes
+## 10. Testing: Jest (unit) + Playwright (E2E)
+
+### Decisión
+
+Se adoptó una estrategia de testing en dos niveles:
+
+- **Tests unitarios**: Jest + Testing Library en `__tests__/` dentro de cada slice o módulo (componentes, use cases, mappers). Cubren lógica de negocio, componentes aislados y validación.
+- **Tests E2E**: Playwright en `tests/e2e/`, contra la app real en `http://localhost:3000`. Cubren flujos de usuario (home, login, dashboard, tema claro/oscuro).
+
+### Estructura E2E
+
+- **`playwright.config.ts`**: `baseURL`, `webServer` (arranca `npm run dev` si hace falta), proyectos Chromium/Firefox/WebKit.
+- **`tests/e2e/home.spec.ts`**: Home, enlaces a login/registro, cambio de tema.
+- **`tests/e2e/dashboard.spec.ts`**: Acceso sin auth (redirect o error), dashboard con empty state y navegación al builder; los tests que requieren login usan `E2E_TEST_EMAIL` y `E2E_TEST_PASSWORD` y se omiten si no están definidas.
+
+### Justificación
+
+- **Jest**: Ya está integrado en el ecosistema React/Next, rápido para unit tests y buena integración con jsdom y Testing Library.
+- **Playwright**: Multi-navegador, API estable, soporte para esperar navegación y red, y posibilidad de reutilizar servidor existente (`reuseExistingServer`). Los tests E2E no dependen de credenciales en el repo: los flujos autenticados se saltan en CI si no se configuran variables de entorno.
+
+### Trade-off
+
+Mantener dos runners (Jest y Playwright) y, para E2E con login, variables de entorno opcionales. A cambio se obtiene cobertura de flujos críticos sin hardcodear usuarios de prueba.
+
+---
+
+## 11. Server Actions vs API Routes
 
 ### Decisión
 
@@ -202,3 +238,121 @@ Se usaron **Server Actions** de Next.js en lugar de API Routes.
 - Integración directa con `revalidatePath` para invalidación de cache.
 - Menos boilerplate que API Routes.
 - Las Server Actions actúan como la capa de "controllers" que orquestan los use cases de la arquitectura hexagonal.
+
+---
+
+## 12. Composition Root: dos contenedores (server vs browser)
+
+### Decisión
+
+La inyección de dependencias y el wiring de use cases se centralizan en **dos contenedores**:
+
+- **`infrastructure/container.ts`** — Raíz de composición para **servidor**: crea repositorios con `createServerSupabaseClient()` (async, cookies de Next) y devuelve use cases de auth, forms y responses. Lo usan las Server Actions y las páginas del App Router.
+- **`infrastructure/browser-container.ts`** — Raíz de composición para **cliente**: crea el cliente Supabase del navegador y devuelve solo el use case que necesita el cliente hoy (`SubscribeToNewResponsesUseCase`). Lo usa el hook `useSubscribeToNewResponses` en el dashboard.
+
+### Justificación
+
+- **Servidor**: Necesita acceso a cookies para sesión; `createServerSupabaseClient` es async y usa `cookies()` de Next. Todos los use cases que orquestan las Server Actions se crean aquí.
+- **Cliente**: Solo se necesita Realtime (suscripción a nuevas respuestas). Un cliente Supabase en el navegador no comparte cookies con el servidor de la misma forma; Realtime es un canal de Supabase que tiene sentido solo en el cliente. Por eso existe un contenedor aparte que solo expone el use case de suscripción.
+- **Un solo lugar que conoce core + infrastructure**: Cada contenedor es el único que importa adaptadores concretos (Supabase) y use cases; el resto de la app depende de los casos de uso, no del origen de los datos.
+
+### Trade-off
+
+Dos archivos de wiring en vez de uno. A cambio, la separación servidor/cliente queda clara y no se mezclan dependencias async de servidor con código que corre en el navegador.
+
+---
+
+## 13. Clientes Supabase: tres contextos (server, middleware, browser)
+
+### Decisión
+
+En `infrastructure/adapters/supabase/client.ts` hay **tres factories** de cliente Supabase:
+
+| Factory                                   | Uso                           | Cookies / contexto                    |
+| ----------------------------------------- | ----------------------------- | ------------------------------------- |
+| `createServerSupabaseClient()`            | Server Components, Actions    | `cookies()` de Next                   |
+| `createMiddlewareSupabaseClient(request)` | Middleware (proxy)            | `request.cookies` + respuesta mutable |
+| `createBrowserSupabaseClient()`           | Componentes cliente, Realtime | Navegador (automático)                |
+
+Todos usan `@supabase/ssr` (createServerClient / createBrowserClient) con las mismas env vars.
+
+### Justificación
+
+- **Next.js maneja cookies de forma distinta** en cada contexto: en servidor se usa el API de `next/headers` (cookies()), en middleware se usa el `NextRequest` y hay que propagar cambios a la respuesta con `setAll`, y en el navegador el cliente de Supabase lo hace solo.
+- **Refresco de sesión**: El middleware puede refrescar la sesión antes de que llegue a la página; por eso el cliente de middleware devuelve `{ supabase, getResponse }` para que los cookies actualizados se envíen en la respuesta.
+- **Un solo archivo** concentra la creación de clientes y evita duplicar la lógica de env y opciones de cookies.
+
+### Trade-off
+
+Tres APIs en lugar de una; cualquier cambio en cómo se leen/escriben cookies debe tenerse en cuenta en los tres. La documentación en DECISIONS y en el propio `client.ts` reduce el riesgo de mal uso.
+
+---
+
+## 14. Realtime: suscripción a nuevas respuestas (hexagonal en el cliente)
+
+### Decisión
+
+La funcionalidad **“ver nuevas respuestas en tiempo real”** en la página de detalle del formulario se implementó siguiendo la **misma arquitectura hexagonal** que el resto del backend, pero con un use case que solo se ejecuta en el **cliente**:
+
+- **Port**: `ResponseRepository.subscribe(formId, onNewResponse)` — devuelve una función de limpieza para cancelar la suscripción.
+- **Use case**: `SubscribeToNewResponsesUseCase` — delega en el port.
+- **Adapter**: `SupabaseResponseRepository` implementa `subscribe` con Supabase Realtime (canal por `form_id`, filtro INSERT).
+- **Composition root**: `browser-container.ts` crea el use case con el repo que usa `createBrowserSupabaseClient()`.
+- **UI**: El hook `useSubscribeToNewResponses` (en el slice dashboard) llama al use case y mantiene la referencia al callback estable para no re-suscribirse en cada render.
+
+### Justificación
+
+- **Consistencia**: Realtime no es “un hack en un componente”; es un caso de uso con contrato en el dominio. Si mañana se cambia de Supabase Realtime a otro canal (WebSockets propios, Pusher, etc.), solo se cambia el adapter.
+- **Testabilidad**: El use case se puede probar con un mock del repo que emita eventos; no hace falta levantar Supabase.
+- **Cliente obligatorio**: Realtime requiere conexión persistente desde el navegador; por eso este use case vive en el browser container y no en el server container.
+
+### Trade-off
+
+Más capas para una sola feature de Realtime. A cambio, el “por qué” y el “dónde” de la suscripción están claros y el dominio no conoce Supabase.
+
+---
+
+## 15. Middleware de protección de rutas (proxy)
+
+### Decisión
+
+La lógica de **protección de rutas y redirecciones** según sesión está en **`src/proxy.ts`** (función `proxy` y `config`):
+
+- **Rutas protegidas** (`/dashboard`, `/builder`): si no hay usuario, redirección a `/login` con `redirectTo` en query.
+- **Rutas de auth** (`/login`, `/register`): si ya hay usuario, redirección a `/dashboard`.
+- **Sesión**: Se usa `createMiddlewareSupabaseClient(request)` para refrescar la sesión antes de decidir la redirección.
+
+Para que Next.js ejecute este middleware, debe existir un archivo **`middleware.ts`** en la raíz del proyecto (o en `src/` según la convención del proyecto) que exporte por **default** la función `proxy` (por ejemplo `export { proxy as default } from '@/proxy'` o importando desde `./src/proxy`).
+
+### Justificación
+
+- **Un solo lugar** para rutas protegidas y redirecciones; fácil de leer y modificar.
+- **Refresco de sesión en middleware**: Supabase SSR recomienda refrescar la sesión en el middleware para que las páginas reciban ya una sesión actualizada.
+- **redirectTo**: Permite volver a la página solicitada tras el login.
+
+### Trade-off
+
+Si no se configura el archivo `middleware.ts` que exporta `proxy`, la protección no se aplica y las páginas del dashboard pueden mostrarse (y fallar por `requireAuth()` en las actions). Es importante documentar este paso en el README o en la guía de configuración.
+
+---
+
+## 16. Calidad de código: Husky, lint-staged, Prettier, ESLint
+
+### Decisión
+
+En pre-commit (Husky) se ejecuta **lint-staged**, que a su vez:
+
+- **ESLint** (con `--fix`) y **Prettier** (con `--write`) sobre `*.{ts,tsx}`.
+- **Prettier** sobre `*.{json,css,md}`.
+
+Así, todo lo que se sube al repositorio cumple un estilo y reglas de lint coherentes.
+
+### Justificación
+
+- **Pre-commit**: Evita que se haga commit de código que rompa lint o formato; el coste es mínimo y mantiene la base de código uniforme.
+- **Prettier + ESLint**: Prettier se encarga del formato; ESLint de reglas (imports, React, Next). Se usa `eslint-config-prettier` para desactivar reglas de formato de ESLint y evitar conflictos.
+- **lint-staged**: Solo se ejecuta sobre archivos staged, así el pre-commit sigue siendo rápido.
+
+### Trade-off
+
+Quienes hacen commit deben tener el entorno listo (Node, dependencias) para que Husky ejecute los scripts. Si algo falla, el commit se rechaza hasta corregir lint/format; eso puede ser molesto si hay muchas correcciones pendientes, pero mantiene la calidad.

@@ -45,7 +45,7 @@ export const FormBuilderProvider: FC<FormBuilderProviderProps> = ({
   );
 };
 
-export function useFormBuilderContext(): FormBuilderContextValue {
+export const useFormBuilderContext = (): FormBuilderContextValue => {
   const ctx = useContext(FormBuilderContext);
   if (!ctx) {
     throw new Error(
@@ -53,4 +53,4 @@ export function useFormBuilderContext(): FormBuilderContextValue {
     );
   }
   return ctx;
-}
+};

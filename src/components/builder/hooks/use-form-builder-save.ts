@@ -13,7 +13,7 @@ import type { FormBuilderData } from '../form-builder-schema';
  * Encapsulates save logic for the form builder: submit handler, saving state, and validation errors.
  * Must be used within FormBuilderProvider.
  */
-export function useFormBuilderSave(formId?: string) {
+export const useFormBuilderSave = (formId?: string) => {
   const router = useRouter();
   const { form } = useFormBuilderContext();
   const [saving, setSaving] = useState(false);
@@ -52,4 +52,4 @@ export function useFormBuilderSave(formId?: string) {
   });
 
   return { handleSave, saving };
-}
+};

@@ -26,7 +26,7 @@ import { DROP_ZONE_ID } from '../fields';
  * Encapsulates all drag-and-drop state and handlers for the form builder.
  * Must be used within FormBuilderProvider.
  */
-export function useFormBuilderDnD() {
+export const useFormBuilderDnD = () => {
   const { fields, reorderFields, addField, addFieldAt } =
     useFormBuilderContext();
 
@@ -165,4 +165,4 @@ export function useFormBuilderDnD() {
     dragWidth,
     insertionIndex,
   };
-}
+};

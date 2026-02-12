@@ -13,13 +13,13 @@ interface CopyLinkButtonProps {
 export const CopyLinkButton: FC<CopyLinkButtonProps> = ({ formId }) => {
   const [copied, setCopied] = useState(false);
 
-  async function handleCopy() {
+  const handleCopy = async () => {
     const url = `${window.location.origin}/forms/${formId}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
     toast.success('Link copiado al portapapeles');
     setTimeout(() => setCopied(false), 2000);
-  }
+  };
 
   return (
     <Button variant="outline" size="sm" onClick={handleCopy}>

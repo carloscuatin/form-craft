@@ -23,7 +23,10 @@ export const ResponseTable: FC<ResponseTableProps> = ({
   responses,
 }) => {
   /** Resolve the display value of an answer */
-  function getDisplayValue(field: FormField, response: FormResponse): string {
+  const getDisplayValue = (
+    field: FormField,
+    response: FormResponse,
+  ): string => {
     const answer = response.answers[field.id];
 
     if (answer === null || answer === undefined || answer === '') {
@@ -42,7 +45,7 @@ export const ResponseTable: FC<ResponseTableProps> = ({
     }
 
     return String(answer);
-  }
+  };
 
   if (responses.length === 0) {
     return (

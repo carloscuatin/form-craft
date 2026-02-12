@@ -10,8 +10,9 @@ import { SupabaseResponseRepository } from './adapters/supabase/supabase-respons
 import { createBrowserSupabaseClient } from './adapters/supabase/client';
 
 /** Create the subscribe-to-new-responses use case (browser Supabase Realtime). */
-export function createSubscribeToNewResponsesUseCase(): SubscribeToNewResponsesUseCase {
-  const supabase = createBrowserSupabaseClient();
-  const responseRepo = new SupabaseResponseRepository(supabase);
-  return new SubscribeToNewResponsesUseCase(responseRepo);
-}
+export const createSubscribeToNewResponsesUseCase =
+  (): SubscribeToNewResponsesUseCase => {
+    const supabase = createBrowserSupabaseClient();
+    const responseRepo = new SupabaseResponseRepository(supabase);
+    return new SubscribeToNewResponsesUseCase(responseRepo);
+  };

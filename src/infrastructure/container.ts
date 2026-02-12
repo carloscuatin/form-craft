@@ -23,7 +23,7 @@ import { SupabaseAuthRepository } from './adapters/supabase/supabase-auth-reposi
 import { createServerSupabaseClient } from './adapters/supabase/client';
 
 /** Auth use cases wired to the authenticated server client */
-export async function createAuthUseCases() {
+export const createAuthUseCases = async () => {
   const supabase = await createServerSupabaseClient();
   const authRepo = new SupabaseAuthRepository(supabase);
 
@@ -33,10 +33,10 @@ export async function createAuthUseCases() {
     signOut: new SignOutUseCase(authRepo),
     getUser: new GetUserUseCase(authRepo),
   };
-}
+};
 
 /** Form & response use cases wired to the authenticated server client */
-export async function createFormUseCases() {
+export const createFormUseCases = async () => {
   const supabase = await createServerSupabaseClient();
   const formRepo = new SupabaseFormRepository(supabase);
   const responseRepo = new SupabaseResponseRepository(supabase);
@@ -49,10 +49,10 @@ export async function createFormUseCases() {
     deleteForm: new DeleteFormUseCase(formRepo),
     getResponses: new GetResponsesUseCase(responseRepo),
   };
-}
+};
 
 /** Public form & response use cases (anonymous access) */
-export async function createPublicFormUseCases() {
+export const createPublicFormUseCases = async () => {
   const supabase = await createServerSupabaseClient();
   const formRepo = new SupabaseFormRepository(supabase);
   const responseRepo = new SupabaseResponseRepository(supabase);
@@ -61,12 +61,12 @@ export async function createPublicFormUseCases() {
     getForm: new GetFormUseCase(formRepo),
     submitResponse: new SubmitResponseUseCase(formRepo, responseRepo),
   };
-}
+};
 
 /** Get the current authenticated user ID or throw */
-export async function requireAuth(): Promise<string> {
+export const requireAuth = async (): Promise<string> => {
   const { getUser } = await createAuthUseCases();
   const user = await getUser.execute();
   if (!user) throw new Error('No autenticado');
   return user.id;
-}
+};

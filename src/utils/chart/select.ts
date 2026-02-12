@@ -3,10 +3,10 @@ import { FormResponse } from '@/core/domain/entities/response';
 import { ChartResult } from '@/types/chart';
 
 /** Select fields: distribution of selected options */
-export function getSelectChartData(
+export const getSelectChartData = (
   field: FormField,
   responses: FormResponse[],
-): ChartResult | null {
+): ChartResult | null => {
   if (!field.options || field.options.length === 0) return null;
 
   const counts: Record<string, number> = {};
@@ -30,4 +30,4 @@ export function getSelectChartData(
   }));
 
   return { data };
-}
+};

@@ -32,12 +32,12 @@ interface FormCardProps {
 export const FormCard: FC<FormCardProps> = ({ form }) => {
   const publicUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/forms/${form.id}`;
 
-  async function handleCopyLink() {
+  const handleCopyLink = async () => {
     await navigator.clipboard.writeText(publicUrl);
     toast.success('Link copiado al portapapeles');
-  }
+  };
 
-  async function handleDelete() {
+  const handleDelete = async () => {
     if (
       !confirm(
         '¿Estás seguro de eliminar este formulario? Se perderán todas las respuestas.',
@@ -51,7 +51,7 @@ export const FormCard: FC<FormCardProps> = ({ form }) => {
     } else {
       toast.success('Formulario eliminado');
     }
-  }
+  };
 
   const formattedDate = new Date(form.createdAt).toLocaleDateString('es-CO', {
     day: 'numeric',
