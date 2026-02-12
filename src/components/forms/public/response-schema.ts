@@ -64,3 +64,7 @@ export const buildFieldSchema = (field: FormField): z.ZodTypeAny => {
       return z.unknown();
   }
 };
+
+export type ResponseFormValues = z.infer<
+  ReturnType<typeof buildResponseSchema>
+>;

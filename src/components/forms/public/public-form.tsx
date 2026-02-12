@@ -21,7 +21,7 @@ import { submitResponse } from '@/app/actions/forms';
 
 import { FieldRenderer } from '../renderer';
 import { buildResponseDefaults } from './form-defaults';
-import { buildResponseSchema } from './response-schema';
+import { buildResponseSchema, ResponseFormValues } from './response-schema';
 
 interface PublicFormProps {
   form: Form;
@@ -40,7 +40,7 @@ export const PublicForm: FC<PublicFormProps> = ({ form }) => {
     control,
     handleSubmit,
     formState: { isSubmitting },
-  } = useForm({
+  } = useForm<ResponseFormValues>({
     resolver: zodResolver(schema),
     defaultValues: defaults,
   });
