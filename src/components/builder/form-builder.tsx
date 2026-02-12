@@ -13,9 +13,9 @@ import {
   FormBuilderSidebar,
   FormBuilderFieldsColumn,
   type FormBuilderTab,
+  FormPreview,
 } from './layout';
 import { FormBuilderDragOverlay } from './fields';
-import { FormPreview } from './preview';
 
 export interface FormBuilderProps {
   formId?: string;

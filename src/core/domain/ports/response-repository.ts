@@ -21,4 +21,10 @@ export interface ResponseRepository {
 
   /** Count responses for a specific form */
   countByFormId(formId: string): Promise<number>;
+
+  /** Subscribe to new responses for a specific form */
+  subscribe(
+    formId: string,
+    onNewResponse: (response: FormResponse) => void,
+  ): () => void;
 }

@@ -5,3 +5,4 @@ export { FieldTypeDragOverlay } from './field-type-drag-overlay';
 export { FormBuilderDragOverlay } from './form-builder-drag-overlay';
 export { SortableFieldItem } from './sortable-field-item';
 export { FIELD_TYPE_ICON_MAP } from './field-type-icons';
+export { InsertionSpacer } from './insertion-spacer';

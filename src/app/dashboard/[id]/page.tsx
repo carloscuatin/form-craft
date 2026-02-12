@@ -1,16 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Edit, BarChart3, Table } from 'lucide-react';
+import { ArrowLeft, Edit } from 'lucide-react';
 
 import { getForm, getResponses } from '@/app/actions/forms';
-import {
-  ResponseTable,
-  ResponseCharts,
-  CopyLinkButton,
-} from '@/components/dashboard';
+import { CopyLinkButton, ResponsesTabs } from '@/components/dashboard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface ResponseDetailPageProps {
   params: Promise<{ id: string }>;
@@ -59,10 +54,6 @@ export default async function ResponseDetailPage({
                 {form.published ? 'Publicado' : 'Borrador'}
               </Badge>
             </div>
-            <p className="text-muted-foreground text-sm">
-              {responses.length}{' '}
-              {responses.length === 1 ? 'respuesta' : 'respuestas'} recibidas
-            </p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -77,26 +68,11 @@ export default async function ResponseDetailPage({
       </div>
 
       {/* Content */}
-      <Tabs defaultValue="table" className="space-y-6">
-        <TabsList className="bg-muted">
-          <TabsTrigger value="table" className="text-sm">
-            <Table className="mr-1.5 h-4 w-4" />
-            Respuestas
-          </TabsTrigger>
-          <TabsTrigger value="charts" className="text-sm">
-            <BarChart3 className="mr-1.5 h-4 w-4" />
-            Gráficas
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="table">
-          <ResponseTable fields={form.fields} responses={responses} />
-        </TabsContent>
-
-        <TabsContent value="charts">
-          <ResponseCharts fields={form.fields} responses={responses} />
-        </TabsContent>
-      </Tabs>
+      <ResponsesTabs
+        formId={form.id}
+        fields={form.fields}
+        initialResponses={responses}
+      />
     </div>
   );
 }

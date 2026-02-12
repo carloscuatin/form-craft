@@ -2,7 +2,8 @@
 
 import { type FC } from 'react';
 
-import { FIELD_ROW_MIN_HEIGHT } from '../constants';
+/** Min height of a field row; used for insertion spacer during drag. */
+const FIELD_ROW_MIN_HEIGHT = 52;
 
 /** Invisible spacer shown during drag to shift the list and indicate insertion point. */
 export const InsertionSpacer: FC = () => (

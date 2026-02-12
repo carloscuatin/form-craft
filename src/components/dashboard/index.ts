@@ -1,3 +1,3 @@
-export { CopyLinkButton, ResponseCharts, ResponseTable } from './responses';
+export { CopyLinkButton, ResponsesTabs } from './responses';
 export { EmptyState, FormCard } from './list';
 export { Navbar } from './layout';

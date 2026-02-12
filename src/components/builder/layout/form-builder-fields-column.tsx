@@ -8,9 +8,8 @@ import {
 } from '@dnd-kit/sortable';
 
 import { useFormBuilderContext } from '../form-builder-context';
-import { FieldsDropZone, SortableFieldItem } from '../fields';
+import { FieldsDropZone, SortableFieldItem, InsertionSpacer } from '../fields';
 import type { FormBuilderTab } from './form-builder-tabs';
-import { InsertionSpacer } from './insertion-spacer';
 
 interface FormBuilderFieldsColumnProps {
   activeTab: FormBuilderTab;

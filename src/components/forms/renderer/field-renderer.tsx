@@ -99,7 +99,7 @@ export const FieldRenderer: FC<FieldRendererProps> = ({
             onValueChange={(v) => handleChange(v)}
             disabled={disabled}
           >
-            <SelectTrigger className="h-10">
+            <SelectTrigger className="h-10 w-full">
               <SelectValue
                 placeholder={field.placeholder || 'Selecciona una opción'}
               />

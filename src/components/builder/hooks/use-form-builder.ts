@@ -38,8 +38,19 @@ export const useFormBuilder = (initialData?: FormBuilderData) => {
     name: 'fields',
   });
 
-  const fields = useWatch({ control: form.control, name: 'fields' });
+  const fields = useWatch({ control: form.control, name: 'fields' }) ?? [];
   const selectedField = fields.find((f) => f.id === selectedFieldId) ?? null;
+
+  const setFieldPathValue = (
+    index: number,
+    path: string,
+    value: unknown,
+  ): void => {
+    form.setValue(`fields.${index}.${path}` as never, value as never, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
 
   /** Create a default field of the given type */
   const createDefaultField = (type: FieldType): FormField => {
@@ -82,7 +93,10 @@ export const useFormBuilder = (initialData?: FormBuilderData) => {
   const updateField = (id: string, updates: Partial<FormField>) => {
     const index = fields.findIndex((f) => f.id === id);
     if (index === -1) return;
-    fieldArray.update(index, { ...fields[index], ...updates });
+
+    for (const [key, value] of Object.entries(updates)) {
+      setFieldPathValue(index, key, value);
+    }
   };
 
   /** Remove a field */
@@ -121,13 +135,10 @@ export const useFormBuilder = (initialData?: FormBuilderData) => {
     if (index === -1) return;
     const field = fields[index];
     const options = field.options ?? [];
-    fieldArray.update(index, {
-      ...field,
-      options: [
-        ...options,
-        { id: uuidv4(), label: `Opción ${options.length + 1}` },
-      ],
-    });
+    setFieldPathValue(index, 'options', [
+      ...options,
+      { id: uuidv4(), label: `Opción ${options.length + 1}` },
+    ]);
   };
 
   /** Update an option */
@@ -135,12 +146,11 @@ export const useFormBuilder = (initialData?: FormBuilderData) => {
     const index = fields.findIndex((f) => f.id === fieldId);
     if (index === -1) return;
     const field = fields[index];
-    fieldArray.update(index, {
-      ...field,
-      options: field.options?.map((o) =>
-        o.id === optionId ? { ...o, label } : o,
-      ),
-    });
+    setFieldPathValue(
+      index,
+      'options',
+      field.options?.map((o) => (o.id === optionId ? { ...o, label } : o)),
+    );
   };
 
   /** Remove an option */
@@ -148,10 +158,11 @@ export const useFormBuilder = (initialData?: FormBuilderData) => {
     const index = fields.findIndex((f) => f.id === fieldId);
     if (index === -1) return;
     const field = fields[index];
-    fieldArray.update(index, {
-      ...field,
-      options: field.options?.filter((o) => o.id !== optionId),
-    });
+    setFieldPathValue(
+      index,
+      'options',
+      field.options?.filter((o) => o.id !== optionId),
+    );
   };
 
   return {

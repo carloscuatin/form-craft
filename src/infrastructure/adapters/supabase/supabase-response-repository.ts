@@ -46,4 +46,30 @@ export class SupabaseResponseRepository implements ResponseRepository {
     if (error) throw new Error(`Error contando respuestas: ${error.message}`);
     return count ?? 0;
   }
+
+  subscribe(
+    formId: string,
+    onNewResponse: (response: FormResponse) => void,
+  ): () => void {
+    const channel = this.supabase
+      .channel(`responses-${formId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'responses',
+          filter: `form_id=eq.${formId}`,
+        },
+        (payload) => {
+          const row = payload.new as ResponseRow | undefined;
+          if (!row?.id) return;
+          const response = ResponseMapper.toDomain(row);
+          onNewResponse(response);
+        },
+      )
+      .subscribe();
+
+    return () => channel.unsubscribe();
+  }
 }

@@ -19,7 +19,6 @@ import {
   resolveNewItemInsertionIndex,
 } from '@/utils/dnd/insertion-index';
 
-import { DND_POINTER_ACTIVATION_DISTANCE } from '../constants';
 import { useFormBuilderContext } from '../form-builder-context';
 import { DROP_ZONE_ID } from '../fields';
 
@@ -38,9 +37,7 @@ export function useFormBuilderDnD() {
   const [dragWidth, setDragWidth] = useState<number | null>(null);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: DND_POINTER_ACTIVATION_DISTANCE },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),

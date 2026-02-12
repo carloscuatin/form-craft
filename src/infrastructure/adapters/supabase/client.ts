@@ -3,14 +3,14 @@
  * Centralizes the creation of Supabase clients for all contexts
  */
 
-import { createServerClient } from '@supabase/ssr';
+import { createBrowserClient, createServerClient } from '@supabase/ssr';
 import { type NextRequest, NextResponse } from 'next/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
 
 /** Create a server-side Supabase client (for Server Components & Server Actions). */
-export async function createServerSupabaseClient() {
+export const createServerSupabaseClient = async () => {
   const { cookies } = await import('next/headers');
   const cookieStore = await cookies();
 
@@ -31,13 +31,13 @@ export async function createServerSupabaseClient() {
       },
     },
   });
-}
+};
 
 /**
  * Create a Supabase client for middleware (uses NextRequest cookies).
  * Returns both the client and a mutable response that tracks cookie changes.
  */
-export function createMiddlewareSupabaseClient(request: NextRequest) {
+export const createMiddlewareSupabaseClient = (request: NextRequest) => {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
@@ -58,4 +58,9 @@ export function createMiddlewareSupabaseClient(request: NextRequest) {
   });
 
   return { supabase, getResponse: () => response };
-}
+};
+
+/** Create a browser Supabase client (for client components). */
+export const createBrowserSupabaseClient = () => {
+  return createBrowserClient(supabaseUrl, supabaseKey);
+};

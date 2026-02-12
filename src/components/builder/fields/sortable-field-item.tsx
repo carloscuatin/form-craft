@@ -11,7 +11,6 @@ import { FormField } from '@/core/domain/entities/form';
 import { FIELD_TYPE_LABELS } from '@/core/domain/value-objects/field-types';
 import { cn } from '@/utils/cn';
 
-import { SORTABLE_TRANSITION } from '../constants';
 import { useFormBuilderContext } from '../form-builder-context';
 
 interface SortableFieldItemProps {
@@ -35,7 +34,10 @@ export const SortableFieldItem: FC<SortableFieldItemProps> = ({ field }) => {
     isDragging,
   } = useSortable({
     id: field.id,
-    transition: SORTABLE_TRANSITION,
+    transition: {
+      duration: 280,
+      easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+    },
   });
 
   const style = {
